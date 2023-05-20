@@ -10,3 +10,5 @@ root.render(
   </React.StrictMode>
 );
 
+//this has a different way than Dave Gray's lesson. 
+//His has ReactDOM.render VS mine that creates a root and renders from the variable.
