@@ -6,14 +6,38 @@ import Footer from './Footer';
 import { useState, useEffect } from 'react';
 
 function App() {
-  const [items, setItems] = useState(JSON.parse(localStorage.getItem('shoppinglist')) || []);
+const API_URL = 'http://localhost:3500/items';
 
-const [newItem, setNewItem] = useState('')
-const [search, setSearch] = useState('')
+const [items, setItems] = useState([]);
 
-  useEffect(() => {
-    localStorage.setItem('shoppinglist', JSON.stringify(items));
-  },[items])
+const [newItem, setNewItem] = useState('');
+const [search, setSearch] = useState('');
+const [fetchError, setFetchError] = useState(null);
+const [isLoading, setIsLoading] = useState(true);
+
+useEffect(() => {
+   
+  const fetchItems = async () => {
+    try {
+      const response = await fetch(API_URL);
+      if(!response.ok) throw Error('Did not receive expected data');
+      const listItems = await response.json();
+      setItems(listItems);
+      setFetchError(null);
+    } catch (err) {
+      setFetchError(err.message);
+    } finally{
+      setIsLoading(false);
+    }
+  }
+
+  setTimeout(() => {
+    fetchItems()
+  }, 2000);
+
+ /*  you don't want that setTimeout in your code. This is just a simulation */
+
+  },[])
 
 const addItem = (item) => {
   const id = items.length 
@@ -60,13 +84,17 @@ const handleSubmit = (e) => {
         search={search}
         setSearch={setSearch}
       />
-      <Content 
-      items={items.filter(item => ((item.item).toLowerCase()).includes(search.toLowerCase()))}
-      handleCheck={handleCheck}
-      handleDelete={handleDelete}
-      />
+      <main>
+        {isLoading && <p>Loading Items...</p>}
+        {fetchError && <p style={{ color: "red" }}>{`Error: ${fetchError}`}</p>}
+        {!fetchError && !isLoading && <Content 
+          items={items.filter(item => ((item.item).toLowerCase()).includes(search.toLowerCase()))}
+          handleCheck={handleCheck}
+          handleDelete={handleDelete}
+        />}
+      </main>
       <Footer 
-      length={items.length}
+        length={items.length}
       />
     </div>
   );
