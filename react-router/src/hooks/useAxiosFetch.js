@@ -1,4 +1,3 @@
-import React from 'react'
 import axios from 'axios'
 import { useState, useEffect } from 'react'
 
@@ -21,9 +20,9 @@ const useAxiosFetch = (dataUrl) => {
                     setData(response.data);
                     setFetchError(null);
                 }
-            } catch (error) {
+            } catch (err) {
                 if (isMounted){
-                    setFetchError(error.message);
+                    setFetchError(err.message);
                     setData([]);
                 }
             } finally {
